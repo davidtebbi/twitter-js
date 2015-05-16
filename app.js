@@ -1,11 +1,16 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var app = express();
 var swig = require('swig');
 var routes = require('./routes/');
+var socketio = require('socket.io');
 
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
 
-app.use('/', routes);
+// parse application/json
+app.use(bodyParser.json())
 
 app.use(morgan('dev'));
 
@@ -30,3 +35,7 @@ var server = app.listen(3000, function () {
   console.log('server listening', host, port);
 
 });
+
+var io = socketio.listen(server);
+
+app.use('/', routes(io));
